@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - FoodieExpress</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 p-4 sm:p-8">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+            <a href="/" class="text-blue-500 hover:underline font-medium flex items-center gap-1">
+                <i data-lucide="arrow-left" class="h-4 w-4"></i> Back to Site
+            </a>
+        </div>
+        
+        <div class="space-y-8">
+            <!-- Admin Credentials -->
+            <div class="border p-6 rounded-lg bg-gray-50">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700 flex items-center gap-2">
+                    <i data-lucide="shield" class="h-5 w-5 text-blue-500"></i> Admin Credentials
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Username</label>
+                        <input type="text" id="admin-username" class="w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Password</label>
+                        <div class="relative">
+                            <input type="password" id="admin-password" class="w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none pr-10">
+                            <button type="button" onclick="toggleAdminPassword()" class="absolute right-3 top-1/2 translate-y-[-10%] text-gray-400 hover:text-gray-600">
+                                <i data-lucide="eye" class="h-5 w-5" id="admin-password-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brand Settings -->
+            <div class="border p-6 rounded-lg bg-gray-50">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700 flex items-center gap-2">
+                    <i data-lucide="layout-template" class="h-5 w-5 text-blue-500"></i> Brand Settings
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Brand Name</label>
+                        <input type="text" id="brand-name" class="w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Logo Text (e.g., F)</label>
+                        <input type="text" id="brand-logo" class="w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div class="col-span-1 sm:col-span-2">
+                        <label class="block text-sm font-medium text-gray-600">Hero Title (HTML allowed)</label>
+                        <input type="text" id="hero-title" class="w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div class="col-span-1 sm:col-span-2">
+                        <label class="block text-sm font-medium text-gray-600">Hero Subtitle</label>
+                        <textarea id="hero-subtitle" class="w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Store Settings -->
+            <div class="border p-6 rounded-lg bg-gray-50 mb-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <i data-lucide="store" class="h-5 w-5 text-blue-500"></i> Store Settings
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-500">Delivery Charge (₹)</label>
+                        <input type="number" id="delivery-charge" class="w-full border p-2 rounded mt-1 outline-none focus:border-blue-500" placeholder="40">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500">Store Location Address</label>
+                        <input type="text" id="store-location" class="w-full border p-2 rounded mt-1 outline-none focus:border-blue-500" placeholder="123 Main St, City">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500">Store Location Link (Google Maps)</label>
+                        <input type="text" id="store-location-link" class="w-full border p-2 rounded mt-1 outline-none focus:border-blue-500" placeholder="https://maps.google.com/...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Settings -->
+            <div class="border p-6 rounded-lg bg-gray-50 mb-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <i data-lucide="credit-card" class="h-5 w-5 text-blue-500"></i> Payment Settings
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="cod-enabled" class="w-4 h-4 text-blue-600 rounded border-gray-300">
+                        <label class="text-sm font-medium text-gray-700">Enable Cash on Delivery (COD)</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="upi-enabled" class="w-4 h-4 text-blue-600 rounded border-gray-300">
+                        <label class="text-sm font-medium text-gray-700">Enable UPI Payment</label>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500">UPI ID</label>
+                        <input type="text" id="upi-id" class="w-full border p-2 rounded mt-1 outline-none focus:border-blue-500" placeholder="example@upi">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="border p-6 rounded-lg bg-gray-50">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center gap-2">
+                        <i data-lucide="grid" class="h-5 w-5 text-blue-500"></i> Categories
+                    </h2>
+                    <button onclick="addCategory()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1">
+                        <i data-lucide="plus" class="h-4 w-4"></i> Add Category
+                    </button>
+                </div>
+                <div id="admin-categories" class="space-y-4"></div>
+            </div>
+
+            <!-- Food Items -->
+            <div class="border p-6 rounded-lg bg-gray-50">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center gap-2">
+                        <i data-lucide="utensils" class="h-5 w-5 text-blue-500"></i> Food Items
+                    </h2>
+                    <button onclick="addFood()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1">
+                        <i data-lucide="plus" class="h-4 w-4"></i> Add New Food
+                    </button>
+                </div>
+                <div id="admin-foods" class="space-y-4"></div>
+            </div>
+
+            <button onclick="saveData()" class="w-full bg-green-500 text-white py-4 rounded-lg font-bold text-lg hover:bg-green-600 transition-colors shadow-lg flex justify-center items-center gap-2">
+                <i data-lucide="save" class="h-5 w-5"></i> Save All Changes
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let siteData = {};
+
+        async function loadData() {
+            const res = await fetch('/api/data');
+            siteData = await res.json();
+            
+            if(siteData.admin) {
+                document.getElementById('admin-username').value = siteData.admin.username;
+                document.getElementById('admin-password').value = siteData.admin.password;
+            }
+
+            document.getElementById('brand-name').value = siteData.brand.name;
+            document.getElementById('brand-logo').value = siteData.brand.logoText;
+            document.getElementById('hero-title').value = siteData.brand.heroTitle;
+            document.getElementById('hero-subtitle').value = siteData.brand.heroSubtitle;
+
+            if (!siteData.storeSettings) {
+                siteData.storeSettings = { deliveryCharge: 40, location: "123 Main St, City", locationLink: "" };
+            }
+            document.getElementById('delivery-charge').value = siteData.storeSettings.deliveryCharge;
+            document.getElementById('store-location').value = siteData.storeSettings.location;
+            document.getElementById('store-location-link').value = siteData.storeSettings.locationLink;
+
+            if (!siteData.paymentSettings) {
+                siteData.paymentSettings = { codEnabled: true, upiEnabled: true, upiId: "" };
+            }
+            document.getElementById('cod-enabled').checked = siteData.paymentSettings.codEnabled;
+            document.getElementById('upi-enabled').checked = siteData.paymentSettings.upiEnabled;
+            document.getElementById('upi-id').value = siteData.paymentSettings.upiId;
+
+            renderCategories();
+            renderFoods();
+            lucide.createIcons();
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('admin-categories');
+            container.innerHTML = siteData.categories.map((c, index) => `
+                <div class="border p-4 rounded bg-white shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4 relative">
+                    <button onclick="deleteCategory(${index})" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold bg-red-50 w-8 h-8 rounded-full flex items-center justify-center">
+                        <i data-lucide="trash-2" class="h-4 w-4"></i>
+                    </button>
+                    <div>
+                        <label class="block text-xs text-gray-500">Category Name</label>
+                        <input type="text" value="${c.name}" onchange="updateCategory(${index}, 'name', this.value)" class="w-full border p-2 rounded mt-1 outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500">Icon (Emoji or Image URL)</label>
+                        <div class="flex flex-col sm:flex-row gap-2 mt-1">
+                            <input type="text" value="${c.icon}" id="cat-icon-${index}" onchange="updateCategory(${index}, 'icon', this.value)" class="w-full border p-2 rounded outline-none focus:border-blue-500">
+                            <input type="file" accept="image/jpeg, image/jpg" onchange="uploadCategoryImage(this, ${index})" class="text-xs w-full sm:w-auto p-1 border rounded bg-gray-50">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function updateCategory(index, key, value) {
+            siteData.categories[index][key] = value;
+        }
+
+        function deleteCategory(index) {
+            if(confirm('Delete this category?')) {
+                siteData.categories.splice(index, 1);
+                renderCategories();
+            }
+        }
+
+        function addCategory() {
+            siteData.categories.unshift({
+                id: Date.now(),
+                name: "New Category",
+                icon: "🍽️"
+            });
+            renderCategories();
+        }
+
+        async function uploadCategoryImage(input, index) {
+            const file = input.files[0];
+            if(!file) return;
+            
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if(data.url) {
+                    siteData.categories[index].icon = data.url;
+                    document.getElementById(`cat-icon-${index}`).value = data.url;
+                    alert('Category image uploaded successfully!');
+                } else {
+                    alert('Upload failed: ' + data.error);
+                }
+            } catch(e) {
+                alert('Error uploading image');
+            }
+        }
+
+        function toggleAdminPassword() {
+            const input = document.getElementById('admin-password');
+            const icon = document.getElementById('admin-password-eye');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        function renderFoods() {
+            const container = document.getElementById('admin-foods');
+            container.innerHTML = siteData.foods.map((f, index) => `
+                <div class="border p-4 rounded bg-white shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4 relative">
+                    <button onclick="deleteFood(${index})" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold bg-red-50 w-8 h-8 rounded-full flex items-center justify-center">
+                        <i data-lucide="trash-2" class="h-4 w-4"></i>
+                    </button>
+                    <div>
+                        <label class="block text-xs text-gray-500">Name</label>
+                        <input type="text" value="${f.name}" onchange="updateFood(${index}, 'name', this.value)" class="w-full border p-2 rounded mt-1 outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500">Price (₹)</label>
+                        <input type="number" value="${f.price}" onchange="updateFood(${index}, 'price', this.value)" class="w-full border p-2 rounded mt-1 outline-none focus:border-blue-500">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs text-gray-500">Description</label>
+                        <textarea onchange="updateFood(${index}, 'description', this.value)" class="w-full border p-2 rounded mt-1 outline-none focus:border-blue-500" rows="2" placeholder="Enter food description...">${f.description || ''}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500">Category</label>
+                        <select onchange="updateFood(${index}, 'category', this.value)" class="w-full border p-2 rounded mt-1 outline-none focus:border-blue-500">
+                            <option value="">Select Category</option>
+                            ${siteData.categories.map(c => `<option value="${c.name}" ${f.category === c.name ? 'selected' : ''}>${c.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500">Image Upload</label>
+                        <div class="flex items-center gap-4 mt-1">
+                            ${f.image ? `<img src="${f.image}" class="w-12 h-12 object-cover rounded border">` : `<div class="w-12 h-12 bg-gray-100 rounded border flex items-center justify-center text-gray-400"><i data-lucide="image" class="h-5 w-5"></i></div>`}
+                            <input type="file" accept="image/jpeg, image/jpg, image/png, image/webp" onchange="uploadImage(this, ${index})" class="text-xs w-full p-1 border rounded bg-gray-50">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function updateFood(index, key, value) {
+            if(key === 'price') value = parseFloat(value);
+            siteData.foods[index][key] = value;
+        }
+
+        function deleteFood(index) {
+            if(confirm('Delete this food item?')) {
+                siteData.foods.splice(index, 1);
+                renderFoods();
+            }
+        }
+
+        function addFood() {
+            siteData.foods.unshift({
+                id: Date.now(),
+                name: "New Food Item",
+                category: siteData.categories.length > 0 ? siteData.categories[0].name : "",
+                price: 10.00,
+                description: "",
+                image: ""
+            });
+            renderFoods();
+        }
+
+        async function uploadImage(input, index) {
+            const file = input.files[0];
+            if(!file) return;
+            
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if(data.url) {
+                    siteData.foods[index].image = data.url;
+                    renderFoods(); // Re-render to show the new image thumbnail
+                    alert('Image uploaded successfully!');
+                } else {
+                    alert('Upload failed: ' + data.error);
+                }
+            } catch(e) {
+                alert('Error uploading image');
+            }
+        }
+
+        async function saveData() {
+            if(!siteData.admin) siteData.admin = {};
+            siteData.admin.username = document.getElementById('admin-username').value;
+            siteData.admin.password = document.getElementById('admin-password').value;
+
+            siteData.brand.name = document.getElementById('brand-name').value;
+            siteData.brand.logoText = document.getElementById('brand-logo').value;
+            siteData.brand.heroTitle = document.getElementById('hero-title').value;
+            siteData.brand.heroSubtitle = document.getElementById('hero-subtitle').value;
+
+            siteData.paymentSettings = {
+                codEnabled: document.getElementById('cod-enabled').checked,
+                upiEnabled: document.getElementById('upi-enabled').checked,
+                upiId: document.getElementById('upi-id').value
+            };
+
+            siteData.storeSettings = {
+                deliveryCharge: parseFloat(document.getElementById('delivery-charge').value) || 0,
+                location: document.getElementById('store-location').value,
+                locationLink: document.getElementById('store-location-link').value
+            };
+
+            const res = await fetch('/api/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(siteData)
+            });
+            
+            if(res.ok) {
+                alert('Changes saved successfully!');
+            } else {
+                alert('Error saving changes');
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

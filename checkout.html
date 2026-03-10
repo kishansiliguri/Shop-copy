@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2 text-gray-900 hover:text-orange-500 transition-colors">
+                <i data-lucide="arrow-left" class="h-5 w-5"></i>
+                <span class="font-bold">Back to Menu</span>
+            </a>
+            <h1 class="text-xl font-bold text-gray-900">Checkout</h1>
+            <div class="w-5"></div> <!-- Spacer -->
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Form -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Order Type -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="shopping-bag" class="h-5 w-5 text-orange-500"></i> Order Type
+                    </h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors" id="label-delivery">
+                            <input type="radio" name="order_type" value="delivery" class="sr-only" onchange="updateOrderType()" checked>
+                            <i data-lucide="bike" class="h-6 w-6 mb-2 text-gray-600"></i>
+                            <span class="font-bold text-gray-900">Delivery</span>
+                            <span class="text-xs text-gray-500 mt-1" id="delivery-charge-text">+₹0</span>
+                        </label>
+                        <label class="relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors" id="label-pickup">
+                            <input type="radio" name="order_type" value="pickup" class="sr-only" onchange="updateOrderType()">
+                            <i data-lucide="store" class="h-6 w-6 mb-2 text-gray-600"></i>
+                            <span class="font-bold text-gray-900">Self Pickup</span>
+                            <span class="text-xs text-green-500 mt-1 font-medium">Free</span>
+                        </label>
+                    </div>
+
+                    <!-- Pickup Details (Hidden by default) -->
+                    <div id="pickup-details" class="hidden mt-4 p-4 bg-orange-50 rounded-xl border border-orange-100">
+                        <h3 class="font-bold text-orange-800 text-sm mb-1">Store Location</h3>
+                        <p class="text-orange-700 text-sm mb-3" id="store-address">Loading...</p>
+                        <a href="#" id="whatsapp-location-btn" target="_blank" class="inline-flex items-center gap-2 text-sm font-bold text-green-600 hover:text-green-700 bg-green-100 px-3 py-1.5 rounded-lg transition-colors mb-4">
+                            <i data-lucide="message-circle" class="h-4 w-4"></i> Get location link by WhatsApp
+                        </a>
+                        
+                        <div class="border-t border-orange-200 pt-4 mt-2">
+                            <h3 class="font-bold text-orange-800 text-sm mb-3">Select Pickup Time</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-orange-800 mb-1">Date</label>
+                                    <select id="pickup-date" class="w-full border border-orange-200 bg-white px-3 py-2 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                                        <option value="Today">Today</option>
+                                        <option value="Tomorrow">Tomorrow</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-orange-800 mb-1">Time</label>
+                                    <select id="pickup-time" class="w-full border border-orange-200 bg-white px-3 py-2 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                                        <!-- Will be populated by JS -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Details -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="user" class="h-5 w-5 text-orange-500"></i> Customer Details
+                    </h2>
+                    <form id="checkout-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                                <input type="text" id="co-name" required class="w-full border border-gray-300 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                                <input type="tel" id="co-phone" required class="w-full border border-gray-300 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                            </div>
+                        </div>
+                        <div id="address-container">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Delivery Address *</label>
+                            <textarea id="co-address" rows="2" class="w-full border border-gray-300 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Alternate Phone (Optional)</label>
+                                <input type="tel" id="co-alt-phone" class="w-full border border-gray-300 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email ID (Optional)</label>
+                                <input type="email" id="co-email" class="w-full border border-gray-300 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Order Notes (Optional)</label>
+                            <textarea id="co-notes" rows="2" class="w-full border border-gray-300 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="E.g., Make it spicy, leave at door..."></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="credit-card" class="h-5 w-5 text-orange-500"></i> Payment Method
+                    </h2>
+                    <div id="payment-options" class="space-y-3">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4">Order Summary</h2>
+                    
+                    <div id="checkout-cart-items" class="space-y-4 mb-6 max-h-[40vh] overflow-y-auto pr-2">
+                        <!-- Cart items rendered here -->
+                    </div>
+
+                    <div class="border-t border-gray-100 pt-4 space-y-2 mb-6">
+                        <div class="flex justify-between text-gray-600">
+                            <span>Subtotal</span>
+                            <span id="summary-subtotal" class="font-medium">₹0.00</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600" id="summary-delivery-row">
+                            <span>Delivery Charge</span>
+                            <span id="summary-delivery" class="font-medium">₹0.00</span>
+                        </div>
+                        <div class="flex justify-between text-gray-900 font-bold text-lg pt-2 border-t border-gray-100">
+                            <span>Total</span>
+                            <span id="summary-total" class="text-orange-500">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <button onclick="placeOrder()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl transition-colors text-lg shadow-lg shadow-green-500/30 flex justify-center items-center gap-2">
+                        Place Order <i data-lucide="check-circle" class="h-5 w-5"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        let siteData = {};
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        const WA_NUMBER = "917098894401";
+
+        async function loadData() {
+            try {
+                const res = await fetch('/api/data');
+                siteData = await res.json();
+                
+                populateTimeOptions();
+                
+                if (!siteData.storeSettings) {
+                    siteData.storeSettings = { deliveryCharge: 40, location: "Not specified", locationLink: "" };
+                }
+                if (!siteData.paymentSettings) {
+                    siteData.paymentSettings = { codEnabled: true, upiEnabled: false, upiId: "" };
+                }
+
+                initCheckout();
+            } catch (e) {
+                console.error("Failed to load data", e);
+            }
+        }
+
+        function initCheckout() {
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                window.location.href = '/';
+                return;
+            }
+
+            // Populate User Data
+            if (currentUser) {
+                document.getElementById('co-name').value = currentUser.name || '';
+                document.getElementById('co-phone').value = currentUser.phone || '';
+                document.getElementById('co-address').value = currentUser.address || '';
+            }
+
+            // Setup Order Type
+            document.getElementById('delivery-charge-text').innerText = `+₹${siteData.storeSettings.deliveryCharge}`;
+            document.getElementById('store-address').innerText = siteData.storeSettings.location;
+            
+            const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hi, please send me the restaurant location link.")}`;
+            document.getElementById('whatsapp-location-btn').href = waLink;
+
+            // Setup Payment Options
+            const paymentContainer = document.getElementById('payment-options');
+            let paymentHtml = '';
+            const settings = siteData.paymentSettings;
+            
+            if (settings.codEnabled) {
+                paymentHtml += `
+                    <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                        <input type="radio" name="payment_method" value="COD" class="w-5 h-5 text-orange-500 focus:ring-orange-500" required checked>
+                        <span class="font-medium text-gray-800">Cash on Delivery (COD)</span>
+                    </label>
+                `;
+            }
+            if (settings.upiEnabled) {
+                paymentHtml += `
+                    <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                        <input type="radio" name="payment_method" value="UPI" class="w-5 h-5 text-orange-500 focus:ring-orange-500" required ${!settings.codEnabled ? 'checked' : ''}>
+                        <div class="flex flex-col">
+                            <span class="font-medium text-gray-800">Pay via UPI</span>
+                            <span class="text-xs text-gray-500">UPI ID: ${settings.upiId || 'Not set'}</span>
+                        </div>
+                    </label>
+                `;
+            }
+            if (!settings.codEnabled && !settings.upiEnabled) {
+                paymentHtml = `<p class="text-red-500 text-sm">No payment methods available. Please contact support.</p>`;
+            }
+            paymentContainer.innerHTML = paymentHtml;
+
+            updateOrderType();
+            renderCart();
+        }
+
+        function populateTimeOptions() {
+            const timeSelect = document.getElementById('pickup-time');
+            if (!timeSelect) return;
+            
+            let html = '';
+            // Generate times from 10:00 AM to 10:00 PM
+            for (let hour = 10; hour <= 22; hour++) {
+                for (let min of ['00', '30']) {
+                    if (hour === 22 && min === '30') continue; // Stop at 10:00 PM
+                    
+                    let displayHour = hour > 12 ? hour - 12 : hour;
+                    let ampm = hour >= 12 ? 'PM' : 'AM';
+                    let timeString = `${displayHour}:${min} ${ampm}`;
+                    html += `<option value="${timeString}">${timeString}</option>`;
+                }
+            }
+            timeSelect.innerHTML = html;
+        }
+
+        function updateOrderType() {
+            const type = document.querySelector('input[name="order_type"]:checked').value;
+            const labelDelivery = document.getElementById('label-delivery');
+            const labelPickup = document.getElementById('label-pickup');
+            const pickupDetails = document.getElementById('pickup-details');
+            const addressContainer = document.getElementById('address-container');
+            const addressInput = document.getElementById('co-address');
+
+            if (type === 'delivery') {
+                labelDelivery.classList.add('border-orange-500', 'bg-orange-50');
+                labelDelivery.classList.remove('border-gray-200');
+                labelPickup.classList.remove('border-orange-500', 'bg-orange-50');
+                labelPickup.classList.add('border-gray-200');
+                
+                pickupDetails.classList.add('hidden');
+                addressContainer.classList.remove('hidden');
+                addressInput.required = true;
+            } else {
+                labelPickup.classList.add('border-orange-500', 'bg-orange-50');
+                labelPickup.classList.remove('border-gray-200');
+                labelDelivery.classList.remove('border-orange-500', 'bg-orange-50');
+                labelDelivery.classList.add('border-gray-200');
+                
+                pickupDetails.classList.remove('hidden');
+                addressContainer.classList.add('hidden');
+                addressInput.required = false;
+            }
+
+            renderCart(); // Update totals
+        }
+
+        function updateQuantity(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                
+                if (cart.length === 0) {
+                    alert("Your cart is empty!");
+                    window.location.href = '/';
+                } else {
+                    renderCart();
+                }
+            }
+        }
+
+        function renderCart() {
+            const container = document.getElementById('checkout-cart-items');
+            let subtotal = 0;
+
+            container.innerHTML = cart.map(item => {
+                subtotal += item.price * item.qty;
+                return `
+                <div class="flex gap-3 items-center">
+                    <img src="${item.image}" class="w-16 h-16 object-cover rounded-lg">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-sm text-gray-900 line-clamp-1">${item.name}</h4>
+                        <p class="text-orange-500 font-bold text-sm">₹${item.price}</p>
+                    </div>
+                    <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                        <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-white text-gray-800 rounded-md font-bold shadow-sm hover:bg-gray-50">-</button>
+                        <span class="font-bold text-sm w-4 text-center">${item.qty}</span>
+                        <button onclick="updateQuantity(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center bg-white text-gray-800 rounded-md font-bold shadow-sm hover:bg-gray-50">+</button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            const orderType = document.querySelector('input[name="order_type"]:checked').value;
+            const deliveryCharge = orderType === 'delivery' ? (siteData.storeSettings.deliveryCharge || 0) : 0;
+            const total = subtotal + deliveryCharge;
+
+            document.getElementById('summary-subtotal').innerText = `₹${subtotal.toFixed(2)}`;
+            document.getElementById('summary-delivery').innerText = `₹${deliveryCharge.toFixed(2)}`;
+            document.getElementById('summary-total').innerText = `₹${total.toFixed(2)}`;
+
+            if (orderType === 'pickup') {
+                document.getElementById('summary-delivery-row').classList.add('hidden');
+            } else {
+                document.getElementById('summary-delivery-row').classList.remove('hidden');
+            }
+        }
+
+        function placeOrder() {
+            const form = document.getElementById('checkout-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const name = document.getElementById('co-name').value.trim();
+            const phone = document.getElementById('co-phone').value.trim();
+            const address = document.getElementById('co-address').value.trim();
+            const altPhone = document.getElementById('co-alt-phone').value.trim();
+            const email = document.getElementById('co-email').value.trim();
+            const notes = document.getElementById('co-notes').value.trim();
+            
+            const orderType = document.querySelector('input[name="order_type"]:checked').value;
+            const paymentMethodEl = document.querySelector('input[name="payment_method"]:checked');
+            if (!paymentMethodEl) return alert("Please select a payment method.");
+            const paymentMethod = paymentMethodEl.value;
+
+            let text = `*New Order*\n\n`;
+            text += `*Customer Details:*\n`;
+            text += `Name: ${name}\n`;
+            text += `Phone: ${phone}\n`;
+            if (altPhone) text += `Alt Phone: ${altPhone}\n`;
+            if (email) text += `Email: ${email}\n`;
+            
+            text += `\n*Order Type:* ${orderType === 'delivery' ? 'Delivery' : 'Self Pickup'}\n`;
+            if (orderType === 'delivery') {
+                text += `Address: ${address}\n`;
+            } else {
+                const pickupDate = document.getElementById('pickup-date').value;
+                const pickupTime = document.getElementById('pickup-time').value;
+                text += `Pickup Time: ${pickupDate} at ${pickupTime}\n`;
+            }
+            
+            text += `\n*Order Items:*\n`;
+            let subtotal = 0;
+            cart.forEach(item => {
+                text += `${item.qty}x ${item.name} - ₹${(item.price * item.qty).toFixed(2)}\n`;
+                subtotal += item.price * item.qty;
+            });
+            
+            const deliveryCharge = orderType === 'delivery' ? (siteData.storeSettings.deliveryCharge || 0) : 0;
+            const total = subtotal + deliveryCharge;
+
+            text += `\nSubtotal: ₹${subtotal.toFixed(2)}\n`;
+            if (orderType === 'delivery') {
+                text += `Delivery Charge: ₹${deliveryCharge.toFixed(2)}\n`;
+            }
+            text += `*Total: ₹${total.toFixed(2)}*\n`;
+            
+            text += `\n*Payment Method:* ${paymentMethod}\n`;
+            if (notes) text += `\n*Notes:* ${notes}\n`;
+            
+            window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
+            
+            // Clear cart
+            localStorage.removeItem('cart');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
+        }
+
+        loadData();
+        lucide.createIcons();
+    </script>
+</body>
+</html>

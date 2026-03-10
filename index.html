@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodieExpress</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        orange: { 50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c' }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900 selection:bg-orange-500 selection:text-white">
+
+    <!-- Navbar -->
+    <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent py-5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div id="brand-logo" class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-orange-500/30">F</div>
+                    <span id="brand-name" class="font-bold text-2xl tracking-tight text-gray-900">Foodie<span class="text-orange-500">Express</span></span>
+                </div>
+
+                <div class="hidden md:flex items-center flex-1 max-w-md mx-8">
+                    <div class="relative w-full group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="search" class="h-5 w-5 text-gray-400 group-focus-within:text-orange-500 transition-colors"></i>
+                        </div>
+                        <input type="text" class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-full leading-5 bg-white/80 backdrop-blur-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:bg-white transition-all sm:text-sm shadow-sm" placeholder="Search for restaurants, cuisines, or dishes...">
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center gap-6">
+                    <button class="text-gray-600 hover:text-orange-500 font-medium transition-colors">Offers</button>
+                    <button class="text-gray-600 hover:text-orange-500 font-medium transition-colors">Help</button>
+                    <div class="flex items-center gap-4 border-l border-gray-200 pl-6">
+                        <button onclick="toggleCart()" class="relative p-2 text-gray-600 hover:text-orange-500 transition-colors">
+                            <i data-lucide="shopping-bag" class="h-6 w-6"></i>
+                            <span class="cart-count absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-orange-500 rounded-full">0</span>
+                        </button>
+                        <button class="auth-btn flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-full font-medium transition-colors">
+                            <i data-lucide="user" class="h-4 w-4"></i>
+                            <span>Sign In</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="md:hidden flex items-center gap-4">
+                    <button onclick="toggleCart()" class="relative p-2 text-gray-600">
+                        <i data-lucide="shopping-bag" class="h-6 w-6"></i>
+                        <span class="cart-count absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-orange-500 rounded-full">0</span>
+                    </button>
+                    <button id="mobile-menu-btn" class="p-2 text-gray-600">
+                        <i data-lucide="menu" class="h-6 w-6" id="menu-icon"></i>
+                        <i data-lucide="x" class="h-6 w-6 hidden" id="close-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-4 shadow-lg overflow-hidden transition-all duration-300">
+            <div class="flex flex-col gap-4">
+                <button class="auth-btn flex items-center justify-center gap-2 bg-orange-500 text-white px-4 py-3 rounded-lg font-medium mt-2">
+                    <i data-lucide="user" class="h-5 w-5"></i>
+                    <span>Sign In / Sign Up</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/50 z-[55] hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-[60] flex flex-col">
+        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="text-xl font-bold">Your Cart</h2>
+            <button onclick="toggleCart()" class="p-2 hover:bg-gray-100 rounded-full"><i data-lucide="x" class="h-6 w-6"></i></button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+            <!-- Cart items rendered here -->
+        </div>
+        <div class="p-4 border-t border-gray-100 bg-gray-50">
+            <div class="flex justify-between mb-4 font-bold text-lg">
+                <span>Total:</span>
+                <span id="cart-total">₹0.00</span>
+            </div>
+            <button onclick="openCheckoutModal()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors">
+                Proceed to Checkout <i data-lucide="arrow-right" class="h-5 w-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Food Details Modal -->
+    <div id="food-modal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300" onclick="if(event.target === this) closeFoodModal()">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]" id="food-modal-content">
+            <div class="relative h-48 sm:h-64 shrink-0">
+                <img id="food-modal-image" src="" class="w-full h-full object-cover" referrerpolicy="no-referrer">
+                <button onclick="closeFoodModal()" class="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm hover:bg-white rounded-full transition-colors shadow-sm"><i data-lucide="x" class="h-5 w-5 text-gray-900"></i></button>
+            </div>
+            <div class="p-5 sm:p-6 overflow-y-auto">
+                <div class="flex justify-between items-start mb-2 gap-4">
+                    <h2 id="food-modal-name" class="text-2xl font-bold text-gray-900"></h2>
+                    <span id="food-modal-price" class="text-2xl font-bold text-orange-500 shrink-0"></span>
+                </div>
+                <p id="food-modal-category" class="text-sm font-medium text-orange-600 mb-4 bg-orange-50 inline-block px-3 py-1 rounded-full"></p>
+                <div class="prose prose-sm text-gray-600">
+                    <h4 class="text-sm font-bold text-gray-900 mb-1">Description</h4>
+                    <p id="food-modal-description" class="leading-relaxed"></p>
+                </div>
+            </div>
+            <div class="p-5 sm:p-6 border-t border-gray-100 bg-gray-50 flex justify-end shrink-0" id="food-modal-action">
+                <!-- Add to cart button will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-transform duration-300" id="auth-modal-content">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h2 class="text-2xl font-bold text-gray-900" id="auth-title">Sign In</h2>
+                <button onclick="closeAuthModal()" class="p-2 hover:bg-gray-200 rounded-full transition-colors"><i data-lucide="x" class="h-5 w-5 text-gray-500"></i></button>
+            </div>
+            <div class="p-6">
+                <!-- Login Form -->
+                <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone or Username</label>
+                        <input type="text" id="login-username" required class="w-full border border-gray-300 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <div class="relative">
+                            <input type="password" id="login-password" required class="w-full border border-gray-300 pl-4 pr-12 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all">
+                            <button type="button" onclick="togglePassword('login-password')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <i data-lucide="eye" class="h-5 w-5" id="login-password-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors mt-2">Sign In</button>
+                    <p class="text-center text-sm text-gray-600 mt-4">Don't have an account? <a href="#" onclick="switchAuthMode('register')" class="text-orange-500 font-bold hover:underline">Register</a></p>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="space-y-4 hidden" onsubmit="handleRegister(event)">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="reg-name" required class="w-full border border-gray-300 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="reg-phone" required class="w-full border border-gray-300 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Delivery Address</label>
+                        <textarea id="reg-address" required rows="2" class="w-full border border-gray-300 px-4 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <div class="relative">
+                            <input type="password" id="reg-password" required class="w-full border border-gray-300 pl-4 pr-12 py-2.5 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all">
+                            <button type="button" onclick="togglePassword('reg-password')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <i data-lucide="eye" class="h-5 w-5" id="reg-password-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors mt-2">Create Account</button>
+                    <p class="text-center text-sm text-gray-600 mt-4">Already have an account? <a href="#" onclick="switchAuthMode('login')" class="text-orange-500 font-bold hover:underline">Sign In</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+            <div class="absolute top-0 right-0 -z-10 w-full h-full overflow-hidden">
+                <div class="absolute top-[-10%] right-[-5%] w-[50%] h-[80%] bg-orange-100/50 rounded-full blur-3xl"></div>
+                <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[60%] bg-yellow-100/50 rounded-full blur-3xl"></div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100 text-orange-600 font-medium text-sm mb-6">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                            </span>
+                            Fastest Delivery in Town
+                        </div>
+                        <h1 id="hero-title" class="text-5xl lg:text-7xl font-extrabold text-gray-900 tracking-tight leading-[1.1] mb-6"></h1>
+                        <p id="hero-subtitle" class="text-lg text-gray-600 mb-8 max-w-lg leading-relaxed"></p>
+
+                        <div class="bg-white p-2 rounded-2xl shadow-xl shadow-gray-200/50 flex flex-col sm:flex-row gap-2 max-w-xl">
+                            <div class="relative flex-1 flex items-center">
+                                <i data-lucide="search" class="absolute left-4 h-5 w-5 text-orange-500"></i>
+                                <input type="text" id="hero-search-input" oninput="handleSearch(event)" placeholder="Search food..." class="w-full pl-12 pr-4 py-3.5 bg-transparent focus:outline-none text-gray-700 font-medium placeholder-gray-400">
+                            </div>
+                            <button onclick="document.getElementById('hero-search-input').focus()" class="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3.5 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+                                Search
+                                <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="relative hidden lg:block">
+                        <div class="relative w-full aspect-square max-w-lg mx-auto">
+                            <div class="absolute inset-0 bg-gradient-to-tr from-orange-400 to-yellow-400 rounded-full opacity-20 animate-pulse"></div>
+                            <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1000&q=80" alt="Delicious Burger" class="absolute inset-0 w-full h-full object-cover rounded-full border-8 border-white shadow-2xl" referrerpolicy="no-referrer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section class="pt-12 pb-4 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Explore Categories</h2>
+                </div>
+                <div id="categories-container" class="flex overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 gap-4 sm:gap-6 hide-scrollbar">
+                    <!-- Dynamic Categories -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Section -->
+        <section class="py-8 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div id="foods-container" class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
+                    <!-- Dynamic Foods -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let siteData = {};
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let currentUser = null;
+        let selectedCategory = null;
+        let searchQuery = "";
+        
+        try {
+            const stored = localStorage.getItem('currentUser');
+            if (stored) currentUser = JSON.parse(stored);
+        } catch(e) {}
+
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.classList.add('bg-white', 'shadow-sm', 'py-3');
+                navbar.classList.remove('bg-transparent', 'py-5');
+            } else {
+                navbar.classList.add('bg-transparent', 'py-5');
+                navbar.classList.remove('bg-white', 'shadow-sm', 'py-3');
+            }
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        const closeIcon = document.getElementById('close-icon');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            menuIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        });
+
+        // Data Loading
+        async function loadData() {
+            try {
+                const res = await fetch('/api/data');
+                siteData = await res.json();
+                renderSite();
+            } catch (e) {
+                console.error("Failed to load data", e);
+            }
+        }
+
+        function renderSite() {
+            if(!siteData.brand) return;
+
+            document.getElementById('brand-logo').innerText = siteData.brand.logoText;
+            document.getElementById('brand-name').innerHTML = siteData.brand.name;
+            document.getElementById('hero-title').innerHTML = siteData.brand.heroTitle;
+            document.getElementById('hero-subtitle').innerText = siteData.brand.heroSubtitle;
+
+            renderCategories();
+            renderFoods();
+            updateCartUI();
+            updateAuthUI();
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+            if(!siteData.categories) return;
+            
+            // Set default category if none selected
+            if (!selectedCategory && siteData.categories.length > 0) {
+                selectedCategory = siteData.categories[0].name;
+            }
+
+            container.innerHTML = siteData.categories.map(c => {
+                const isImage = c.icon && (c.icon.startsWith('http') || c.icon.startsWith('/uploads'));
+                const iconHtml = isImage ? `<img src="${c.icon}" class="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-full">` : c.icon;
+                return `
+                <button onclick="selectCategory('${c.name}')" class="flex-shrink-0 flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl sm:rounded-3xl border-2 transition-all min-w-[80px] sm:min-w-[100px] ${selectedCategory === c.name ? 'border-orange-500 bg-orange-50' : 'border-transparent bg-white hover:border-orange-200'}">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-50 flex items-center justify-center text-3xl sm:text-4xl shadow-sm border border-gray-100 transition-colors overflow-hidden ${selectedCategory === c.name ? 'bg-orange-100' : ''}">
+                        ${iconHtml}
+                    </div>
+                    <span class="font-medium text-gray-700 transition-colors text-sm sm:text-base ${selectedCategory === c.name ? 'text-orange-500 font-bold' : ''}">${c.name}</span>
+                </button>
+            `}).join('');
+        }
+
+        function selectCategory(categoryName) {
+            selectedCategory = categoryName;
+            searchQuery = ""; // Clear search when category is clicked
+            document.getElementById('hero-search-input').value = "";
+            renderCategories(); // Update active state
+            renderFoods();      // Filter foods
+        }
+
+        function handleSearch(e) {
+            searchQuery = e.target.value.toLowerCase();
+            if (searchQuery) {
+                selectedCategory = null; // Clear category selection when searching
+                renderCategories();
+            }
+            renderFoods();
+        }
+
+        function renderFoods() {
+            const container = document.getElementById('foods-container');
+            if(!siteData.foods) return;
+
+            let filteredFoods = siteData.foods;
+
+            // Apply Search Filter
+            if (searchQuery) {
+                filteredFoods = filteredFoods.filter(f => 
+                    f.name.toLowerCase().includes(searchQuery) || 
+                    (f.category && f.category.toLowerCase().includes(searchQuery))
+                );
+            } 
+            // Apply Category Filter (only if no search query is active)
+            else if (selectedCategory) {
+                filteredFoods = filteredFoods.filter(f => f.category === selectedCategory);
+            }
+
+            if (filteredFoods.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <i data-lucide="search-x" class="h-12 w-12 mx-auto text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-bold text-gray-900">No items found</h3>
+                        <p class="text-gray-500">Try a different category or search term.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = filteredFoods.map(f => `
+                <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow border border-gray-100 group flex flex-col cursor-pointer" onclick="openFoodModal(${f.id})">
+                    <div class="relative h-32 sm:h-48 overflow-hidden shrink-0">
+                        <img src="${f.image}" alt="${f.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerpolicy="no-referrer">
+                    </div>
+                    <div class="p-3 sm:p-5 flex flex-col flex-1">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-1 sm:mb-2 gap-1">
+                            <h3 class="font-bold text-sm sm:text-lg text-gray-900 line-clamp-1">${f.name}</h3>
+                            <span class="font-bold text-sm sm:text-lg text-orange-500">₹${f.price}</span>
+                        </div>
+                        <p class="text-gray-500 text-xs sm:text-sm mb-2 sm:mb-4 line-clamp-1">${f.category || ''}</p>
+                        <div class="flex items-center justify-end mt-auto" onclick="event.stopPropagation()">
+                            <div id="food-action-${f.id}"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateCartUI(); // This will re-render the Add to Cart buttons
+            lucide.createIcons();
+        }
+
+        // Auth Logic
+        function openAuthModal(mode = 'login') {
+            const modal = document.getElementById('auth-modal');
+            const content = document.getElementById('auth-modal-content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
+            switchAuthMode(mode);
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            const content = document.getElementById('auth-modal-content');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // Food Modal Logic
+        function openFoodModal(id) {
+            const food = siteData.foods.find(f => f.id === id);
+            if (!food) return;
+
+            document.getElementById('food-modal-image').src = food.image;
+            document.getElementById('food-modal-name').innerText = food.name;
+            document.getElementById('food-modal-price').innerText = `₹${food.price}`;
+            document.getElementById('food-modal-category').innerText = food.category || '';
+            document.getElementById('food-modal-description').innerText = food.description || 'No description available.';
+            
+            const actionContainer = document.getElementById('food-modal-action');
+            actionContainer.dataset.foodId = food.id;
+
+            const modal = document.getElementById('food-modal');
+            const content = document.getElementById('food-modal-content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+            
+            updateCartUI(); // This will render the button in the modal
+        }
+
+        function closeFoodModal() {
+            const modal = document.getElementById('food-modal');
+            const content = document.getElementById('food-modal-content');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+            document.body.style.overflow = '';
+        }
+
+        function switchAuthMode(mode) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const title = document.getElementById('auth-title');
+            if (mode === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                title.innerText = 'Sign In';
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                title.innerText = 'Create Account';
+            }
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(inputId + '-eye');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    if (data.role === 'admin') {
+                        window.location.href = '/admin.html';
+                    } else {
+                        localStorage.setItem('currentUser', JSON.stringify(data.user));
+                        currentUser = data.user;
+                        updateAuthUI();
+                        closeAuthModal();
+                        alert(`Welcome back, ${data.user.name}!`);
+                    }
+                } else {
+                    alert(data.error || 'Login failed');
+                }
+            } catch (err) {
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const address = document.getElementById('reg-address').value.trim();
+            const password = document.getElementById('reg-password').value;
+            
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, address, password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    currentUser = data.user;
+                    updateAuthUI();
+                    closeAuthModal();
+                    alert(`Account created! Welcome, ${data.user.name}!`);
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (err) {
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            updateAuthUI();
+        }
+
+        function updateAuthUI() {
+            const authBtns = document.querySelectorAll('.auth-btn');
+            authBtns.forEach(btn => {
+                if(currentUser) {
+                    btn.innerHTML = `<i data-lucide="user" class="h-4 w-4"></i><span class="truncate max-w-[100px]">Hi, ${currentUser.name.split(' ')[0]}</span>`;
+                    btn.onclick = logout;
+                } else {
+                    btn.innerHTML = `<i data-lucide="user" class="h-4 w-4"></i><span>Sign In</span>`;
+                    btn.onclick = () => openAuthModal('login');
+                }
+            });
+            lucide.createIcons();
+        }
+
+        // Cart Logic
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('cart-overlay');
+            
+            if (sidebar.classList.contains('translate-x-full')) {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function addToCart(id) {
+            const food = siteData.foods.find(f => f.id === id);
+            const existing = cart.find(item => item.id === id);
+            if(existing) existing.qty++;
+            else cart.push({...food, qty: 1});
+            updateCartUI();
+        }
+
+        function updateQuantity(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    removeFromCart(id);
+                } else {
+                    updateCartUI();
+                }
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.querySelectorAll('.cart-count').forEach(el => el.innerText = count);
+            
+            // Update food cards UI
+            if (siteData.foods) {
+                siteData.foods.forEach(f => {
+                    const actionContainer = document.getElementById(`food-action-${f.id}`);
+                    if (!actionContainer) return;
+                    
+                    const cartItem = cart.find(item => item.id === f.id);
+                    if (cartItem) {
+                        actionContainer.innerHTML = `
+                            <div class="flex items-center gap-2 bg-orange-100 rounded-lg p-1">
+                                <button onclick="updateQuantity(${f.id}, -1)" class="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center bg-white text-orange-600 rounded-md font-bold shadow-sm hover:bg-orange-50 transition-colors">-</button>
+                                <span class="font-bold text-sm sm:text-base w-4 text-center text-orange-600">${cartItem.qty}</span>
+                                <button onclick="updateQuantity(${f.id}, 1)" class="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center bg-orange-500 text-white rounded-md font-bold shadow-sm hover:bg-orange-600 transition-colors">+</button>
+                            </div>
+                        `;
+                    } else {
+                        actionContainer.innerHTML = `
+                            <button onclick="addToCart(${f.id})" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-colors shadow-sm">
+                                Add to Cart
+                            </button>
+                        `;
+                    }
+                });
+            }
+
+            // Update modal action if open
+            const modalActionContainer = document.getElementById('food-modal-action');
+            if (modalActionContainer && modalActionContainer.dataset.foodId) {
+                const foodId = parseInt(modalActionContainer.dataset.foodId);
+                const cartItem = cart.find(item => item.id === foodId);
+                if (cartItem) {
+                    modalActionContainer.innerHTML = `
+                        <div class="flex items-center gap-3 bg-orange-100 rounded-xl p-1.5">
+                            <button onclick="updateQuantity(${foodId}, -1)" class="w-10 h-10 flex items-center justify-center bg-white text-orange-600 rounded-lg font-bold shadow-sm hover:bg-orange-50 transition-colors text-lg">-</button>
+                            <span class="font-bold text-lg w-8 text-center text-orange-600">${cartItem.qty}</span>
+                            <button onclick="updateQuantity(${foodId}, 1)" class="w-10 h-10 flex items-center justify-center bg-orange-500 text-white rounded-lg font-bold shadow-sm hover:bg-orange-600 transition-colors text-lg">+</button>
+                        </div>
+                    `;
+                } else {
+                    modalActionContainer.innerHTML = `
+                        <button onclick="addToCart(${foodId})" class="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-bold transition-colors shadow-sm text-lg">
+                            Add to Cart
+                        </button>
+                    `;
+                }
+            }
+
+            const cartItemsContainer = document.getElementById('cart-items');
+            let total = 0;
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p class="text-gray-500 text-center mt-10">Your cart is empty</p>';
+            } else {
+                cartItemsContainer.innerHTML = cart.map(item => {
+                    total += item.price * item.qty;
+                    return `
+                    <div class="flex gap-4 border-b border-gray-100 pb-4">
+                        <img src="${item.image}" class="w-20 h-20 object-cover rounded-lg">
+                        <div class="flex-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-bold text-sm">${item.name}</h4>
+                                <p class="text-orange-500 font-bold">₹${item.price}</p>
+                            </div>
+                            <div class="flex justify-between items-center mt-2">
+                                <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                                    <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-white text-gray-800 rounded-md font-bold shadow-sm hover:bg-gray-50">-</button>
+                                    <span class="font-bold text-sm w-4 text-center">${item.qty}</span>
+                                    <button onclick="updateQuantity(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center bg-white text-gray-800 rounded-md font-bold shadow-sm hover:bg-gray-50">+</button>
+                                </div>
+                                <button onclick="removeFromCart(${item.id})" class="text-red-500 text-sm hover:underline">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            }
+            
+            document.getElementById('cart-total').innerText = `₹${total.toFixed(2)}`;
+        }
+
+        function openCheckoutModal() {
+            if (cart.length === 0) return alert("Your cart is empty!");
+            window.location.href = '/checkout.html';
+        }
+
+        // Initialize
+        loadData();
+        updateCartUI();
+    </script>
+</body>
+</html>
